@@ -462,8 +462,8 @@
       </div>
       <div class="pricing-card">
         <p class="pricing-label" style="margin-top:38px">Cartão de crédito</p>
-        <p class="pricing-amount">R$&nbsp;4.900<span>,00</span></p>
-        <p class="pricing-detail">Em até <strong>12× sem juros</strong><br>de R$ 408,33</p>
+        <p class="pricing-amount">12× <span>R$ 388,21</span></p>
+        <p class="pricing-detail">Parcelado ou pagamento recorrente<br><small style="font-size:11px;color:#888">(recorrente não compromete o limite do cartão)</small></p>
       </div>
     </div>
 
@@ -504,9 +504,9 @@
         <div class="field full">
           <label>Forma de pagamento *</label>
           <div class="radio-group" id="rg-pagamento">
-            <label onclick="selectRadio('rg-pagamento', this, 'pagamento', 'Boleto à vista', null)"><input type="radio" name="pagamento" value="Boleto à vista"> Boleto à vista</label>
-            <label onclick="selectRadio('rg-pagamento', this, 'pagamento', 'Boleto parcelado', null)"><input type="radio" name="pagamento" value="Boleto parcelado"> Boleto parcelado</label>
-            <label onclick="selectRadio('rg-pagamento', this, 'pagamento', 'Cartão de crédito parcelado', 'parcelas')"><input type="radio" name="pagamento" value="Cartão de crédito parcelado"> Cartão de crédito parcelado</label>
+            <label><input type="radio" name="pagamento" value="Boleto à vista"> Boleto à vista</label>
+            <label><input type="radio" name="pagamento" value="Boleto parcelado"> Boleto parcelado</label>
+            <label><input type="radio" name="pagamento" value="Cartão de crédito parcelado"> Cartão de crédito parcelado</label>
           </div>
         </div>
         <div class="field" id="parcelas-field" style="display:none">
@@ -597,26 +597,32 @@
       : v.replace(/(\d{2})(\d{5})(\d)/,'($1) $2-$3');
   });
 
-  function selectRadio(groupId, labelEl, name, value, toggleId) {
-    // Remove seleção de todos os labels do grupo
-    var group = document.getElementById(groupId);
-    group.querySelectorAll('label').forEach(function(l) { l.classList.remove('selected'); });
-    // Marca o clicado
-    labelEl.classList.add('selected');
-    // Marca o input como checked
-    var input = labelEl.querySelector('input[type=radio]');
-    if (input) input.checked = true;
-    // Lógica de campos condicionais
-    if (name === 'pagamento') {
-      var show = value === 'Cartão de crédito parcelado';
-      document.getElementById('parcelas-field').style.display = show ? 'block' : 'none';
-      if (!show) document.getElementById('f-parcelas').value = '';
-    }
-    if (name === 'veterinario') {
-      var crmv = document.getElementById('crmv-field');
-      if (crmv) crmv.style.display = value === 'Sim' ? 'block' : 'none';
-    }
-  }
+  /* Radio buttons visuais */
+  window.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.radio-group').forEach(function(group) {
+      group.querySelectorAll('input[type=radio]').forEach(function(input) {
+        input.addEventListener('change', function() {
+          // Remove seleção de todos os labels do grupo
+          group.querySelectorAll('label').forEach(function(l) {
+            l.classList.remove('selected');
+          });
+          // Adiciona ao label pai do input marcado
+          input.parentElement.classList.add('selected');
+          // Lógica parcelas
+          if (input.name === 'pagamento') {
+            var show = input.value === 'Cartão de crédito parcelado';
+            document.getElementById('parcelas-field').style.display = show ? 'block' : 'none';
+            if (!show) document.getElementById('f-parcelas').value = '';
+          }
+          // Lógica CRMV
+          if (input.name === 'veterinario') {
+            var crmv = document.getElementById('crmv-field');
+            if (crmv) crmv.style.display = input.value === 'Sim' ? 'block' : 'none';
+          }
+        });
+      });
+    });
+  });
 
   function toggleParcelas(radio) {
     var show = radio.value === 'Cartão de crédito parcelado';
